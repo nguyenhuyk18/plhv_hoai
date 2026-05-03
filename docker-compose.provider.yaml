@@ -1,0 +1,52 @@
+name: lms_thuong_hoai
+
+networks:
+  lms_thuong_hoai_nw:
+    driver: bridge
+    name: lms_thuong_hoai_nw
+
+services: 
+
+  # MySQL Database
+  # mysql:
+  #   image: mysql:5.7
+  #   container_name: mysql_lms_thuong_hoai
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_DATABASE: qlhv
+  #     MYSQL_USER: qlhv_user
+  #     MYSQL_PASSWORD: qlhv_password
+  #   ports:
+  #     - "3307:3306"
+  #   volumes:
+  #     - ./docker/docker_data/mysql_data:/var/lib/mysql
+  #     - ./database:/docker-entrypoint-initdb.d
+  #   restart: unless-stopped
+  #   networks:
+  #     - lms_thuong_hoai_nw
+
+  # PHP Application
+  php-app:
+    build:
+      context: .
+      dockerfile: dockerfile/Dockerfile
+    container_name: php_lms_thuong_hoai
+    ports:
+      - "8081:80"
+    volumes:
+      - .:/var/www/html
+    restart: unless-stopped
+    networks:
+      - lms_thuong_hoai_nw
+
+  # Ollama AI
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_lms_thuong_hoai
+    ports:
+      - "11435:11434"
+    volumes:
+      - ./docker/docker_data/ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - lms_thuong_hoai_nw
